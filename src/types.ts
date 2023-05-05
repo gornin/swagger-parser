@@ -13,6 +13,10 @@ export interface Properties{
         type: string;
         format: string;
         description: string;
+        $ref?: string;
+        items?: {
+            [key:string]: string;
+        }
     }
 }
 
