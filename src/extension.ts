@@ -76,20 +76,19 @@ export function activate(context: vscode.ExtensionContext) {
   // 	vscode.window.showInformationMessage('Hello World from swagger-parser!');
   // });
 
-  if (
-    !vscode.window.activeTextEditor ||
-    posix.extname(vscode.window.activeTextEditor.document.uri.path) !== ".json"
-  ) {
-    return vscode.window.showInformationMessage("Open a Json file first");
-  }
+  
 
   let disposable = vscode.commands.registerCommand(
     "swagger-parser.generate",
     async () => {
       const editor = vscode.window.activeTextEditor;
-      if (!editor) {
-        return vscode.window.showInformationMessage("Open a file first");
+      if (
+        !editor ||
+        posix.extname(editor.document.uri.path) !== ".json"
+      ) {
+        return vscode.window.showInformationMessage("Open a Json file first");
       }
+
       const content = editor.document.getText();
 
       // 处理json数据
