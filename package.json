@@ -4,7 +4,7 @@
   "publisher": "gornin",
   "displayName": "swagger-parser",
   "description": "a parser to transform swagger api to services or other api",
-  "version": "0.0.2",
+  "version": "0.1.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/gornin/swagger-parser.git"
