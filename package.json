@@ -1,6 +1,7 @@
 {
   "name": "swagger-parser",
   "author": "gornin",
+  "publisher": "gornin",
   "displayName": "swagger-parser",
   "description": "a parser to transform swagger api to services or other api",
   "version": "0.0.1",
@@ -8,7 +9,7 @@
     "type": "git",
     "url": "https://github.com/gornin/swagger-parser.git"
   },
-  "icon": "images/gyl.png",
+  "icon": "images/gya.png",
   "keywords": [
     "swagger",
     "api",
@@ -63,7 +64,7 @@
     "yaml-language-server-parser": "^0.1.2"
   },
   "devDependencies": {
-    "@types/vscode": "^1.77.0",
+    "@types/vscode": "^1.50.0",
     "@types/glob": "^8.1.0",
     "@types/mocha": "^10.0.1",
     "@types/node": "16.x",

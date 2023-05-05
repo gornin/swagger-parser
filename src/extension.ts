@@ -102,7 +102,7 @@ export function activate(context: vscode.ExtensionContext) {
 
       // 目标文件路径
       const targetFileUri = folderUri.with({
-        path: posix.join(folderUri.path, "api.js"),
+        path: posix.join(folderUri.path, "services.js"),
       });
       await vscode.workspace.fs.writeFile(
         targetFileUri,
