@@ -2,9 +2,32 @@
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from "vscode";
 import { posix } from "path";
+import { Content, Definitions } from "./types";
 
-function parser(content) {
-  let data = content;
+function getParams(params: any[], definitions:Definitions) {
+  return params?.map(para => {
+    if (para.schema && para.schema.$ref) {
+      const def = para.schema.$ref.replace('#/definitions/', '');
+      const { type, properties, title, description } = definitions[def] || {};
+      const prop = Object.entries(properties).map(([k, v]) => {
+        return `${k}: ${v.type} ${v.description||''}`;
+      }).join('\n * ');
+      return prop;
+    } else if (para.type) {
+      return `${para.name}: ${para.type} ${para.description||''}`;
+    }
+  }).join('\n * ');
+}
+
+function comments(summary: string, tags: string[], parameters: any, definitions: any) {
+  return `/* 
+ *【${tags.toString()}】${summary} 
+ * ${getParams(parameters, definitions)||''}
+ */\n`;
+}
+
+function parser(content:any) {
+  let data:Content = content;
   if (typeof content === "string") {
     data = JSON.parse(content);
   }
@@ -14,16 +37,23 @@ function parser(content) {
   Object.entries(paths).forEach(([key, val]) => {
     const { get, post, put, delete: del } = val;
     if (get) {
-      const reg = /\{([^()]*)\}/g;
-      const param = key.match(reg) || [""];
-      console.log(param);
-      const { operationId, summary, tags } = get;
-      target += `\n
-/* 【${tags.toString()}】${summary} */
-export const ${operationId} = (${param[0].substring(
-        1,
-        param[0].length - 1
-      )}) => get(\`${key.replace("/{", "/${")}\`)`;
+      // https://www.runoob.com/regexp/regexp-syntax.html
+      const reg = /(?<=\{)[a-zA-Z0-9]+(?=\})/g;
+      const param = key.match(reg);
+      const { operationId, summary, tags, parameters } = get;
+      target += `\n${comments(summary, tags, parameters, definitions)}export const ${operationId} = (${param || ''}) => get(\`${key.replaceAll("/{", "/${")}\`)\n`;
+    } else if (del) {
+      // https://www.runoob.com/regexp/regexp-syntax.html
+      const reg = /(?<=\{)[a-zA-Z0-9]+(?=\})/g;
+      const param = key.match(reg);
+      const { operationId, summary, tags, parameters } = del;
+      target += `\n${comments(summary, tags, parameters, definitions)}export const ${operationId} = (${param || ''}) => del(\`${key.replaceAll("/{", "/${")}\`)\n`;
+    } else if (post) {
+      const { operationId, summary, tags, parameters } = post;
+      target += `\n${comments(summary, tags, parameters, definitions)}export const ${operationId} = (params) => post('${key}', params)\n`;
+    } else if (put) {
+      const { operationId, summary, tags, parameters } = put;
+      target += `\n${comments(summary, tags, parameters, definitions)}export const ${operationId} = (params) => put('${key}', params)\n`;
     }
   });
 
@@ -87,4 +117,4 @@ export function activate(context: vscode.ExtensionContext) {
 }
 
 // This method is called when your extension is deactivated
-export function deactivate() {}
+export function deactivate() { }
